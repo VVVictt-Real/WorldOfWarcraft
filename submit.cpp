@@ -132,7 +132,9 @@ class Wolf : public Warrior {
 private:
 public:
   Wolf(int id, Headquarter *owner)
-      : Warrior(id, initial_hp[WOLF], owner, WOLF) {}
+      : Warrior(id, initial_hp[WOLF], owner, WOLF) {
+    ap = attackPower[WOLF];
+  }
   void getWeapon(Warrior *other, int city_id);
 };
 
@@ -189,6 +191,7 @@ public:
   Game(int lifeUnit, int N, int T);
   void run();
   bool move();
+  ~Game();
 };
 void game();
 
@@ -217,7 +220,7 @@ public:
   virtual bool isDamaged() = 0;
   virtual int attackOther() { return attackPower; }
   virtual int attackSelf() { return 0; }
-  virtual bool compare(const Weapon *) const { return true; }
+  virtual bool compare(const Weapon *) const { return false; }
   bool operator<(const Weapon &other) const {
     if (this->myType != other.myType) {
       return this->myType < other.myType;
@@ -240,7 +243,7 @@ private:
 
 public:
   Bomb(Warrior *owner, int ap) : Weapon(BOMB, owner, ap * 2 / 5){};
-  bool isDamaged() override { return false; }
+  bool isDamaged() override { return isUsed; }
   int attackSelf() override { return attackPower / 2; }
   void used() override { isUsed = true; }
 };
@@ -405,7 +408,9 @@ void Warrior::attack(Warrior *other) {
   if (weapons.empty())
     return;
   other->beHurt(weapons[currentWeapon]->attackOther());
-  this->beHurt(weapons[currentWeapon]->attackSelf());
+  if (myType == NINJA && weapons[currentWeapon]->getType() == BOMB) {
+  } else
+    this->beHurt(weapons[currentWeapon]->attackSelf());
   weapons[currentWeapon]->used();
   if (weapons[currentWeapon]->isDamaged()) {
     delete weapons[currentWeapon];
@@ -453,6 +458,14 @@ vector<Weapon *> Warrior::beenSeizedWeapon() {
 }
 void Warrior::seizeWeapon(Warrior *other) {
   vector<Weapon *> seized = other->beenSeizedWeapon();
+  sort(seized.begin(), seized.end(), [](Weapon *a, Weapon *b) {
+    if (a->getType() != b->getType())
+      return a->getType() < b->getType();
+    if (a->getType() == ARROW)
+      return static_cast<Arrow *>(a)->getDurability() >
+             static_cast<Arrow *>(b)->getDurability();
+    return false;
+  });
   for (auto weapon : seized) {
     if (weapons.size() < 10) {
       weapons.push_back(weapon);
@@ -488,6 +501,14 @@ void Wolf::getWeapon(Warrior *other, int city_id) {
   if (stolen.empty()) {
     return;
   }
+  sort(stolen.begin(), stolen.end(), [](Weapon *a, Weapon *b) {
+    if (a->getType() != b->getType())
+      return a->getType() < b->getType();
+    if (a->getType() == ARROW)
+      return static_cast<Arrow *>(a)->getDurability() >
+             static_cast<Arrow *>(b)->getDurability();
+    return false;
+  });
   int num = 0;
   Weapon_Type type = stolen[0]->getType();
   if (type == ARROW) {
@@ -619,7 +640,8 @@ void Game::run() {
     clocktime.addTime(5);
     if (endtime < clocktime)
       break;
-    move();
+    if (move())
+      break;
 
     clocktime.addTime(25);
     if (endtime < clocktime)
@@ -659,6 +681,7 @@ void Game::run() {
 }
 
 bool Game::move() {
+  bool flag = false;
   for (int i = cityNum; i >= 0; i--) {
     if (cities[i].redWarrior == nullptr)
       continue;
@@ -695,7 +718,7 @@ bool Game::move() {
            tmp->get_ap());
     clocktime.printTime();
     printf("red headquarter was taken\n");
-    return true;
+    flag = true;
   }
   for (int i = 1; i <= cityNum; i++) {
     if (cities[i].redWarrior != nullptr) {
@@ -721,9 +744,21 @@ bool Game::move() {
            tmp->get_ap());
     clocktime.printTime();
     printf("blue headquarter was taken\n");
-    return true;
+    flag = true;
   }
-  return false;
+  return flag;
+}
+Game::~Game() {
+  for (auto &city : cities) {
+    if (city.redWarrior) {
+      delete city.redWarrior;
+      city.redWarrior = nullptr;
+    }
+    if (city.blueWarrior) {
+      delete city.blueWarrior;
+      city.blueWarrior = nullptr;
+    }
+  }
 }
 
 /* --- Start of Weapon.cpp --- */
