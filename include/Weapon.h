@@ -16,7 +16,7 @@ public:
       : myType(type), owner(owner), attackPower(ap) {}
   int get_ap() { return attackPower; }
   Weapon_Type getType() { return myType; }
-  void change_owner(Warrior *newOwner) { owner = newOwner; }
+  virtual void change_owner(Warrior *newOwner) { owner = newOwner; }
   virtual void used() {}
   virtual bool isDamaged() = 0;
   virtual int attackOther() { return attackPower; }
@@ -36,6 +36,7 @@ private:
 public:
   Sword(Warrior *owner, int ap) : Weapon(SWORD, owner, ap / 5){};
   bool isDamaged() override { return false; }
+  void change_owner(Warrior *newOwner) override;
 };
 
 class Bomb : public Weapon {
@@ -47,6 +48,7 @@ public:
   bool isDamaged() override { return isUsed; }
   int attackSelf() override { return attackPower / 2; }
   void used() override { isUsed = true; }
+  void change_owner(Warrior *newOwner) override;
 };
 
 class Arrow : public Weapon {
@@ -63,6 +65,7 @@ public:
     return this->durability <
            static_cast<const Arrow *>(other)->getDurability();
   }
+  void change_owner(Warrior *newOwner) override;
 };
 
 #endif // !WEAPON

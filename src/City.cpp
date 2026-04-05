@@ -12,7 +12,19 @@ void City::runBattle() {
   attacker->sortWeapons();
   target->sortWeapons();
   while (true) {
+    // if (id == 3 && redWarrior->get_id() == 10 && blueWarrior->get_id() == 5)
+    // {
+    //   printf("[DEBUG] attack:%s, weapon:%s, damage:%d, self_damage:%d",
+    //          WARRIOR_NAMES[attacker->getType()].c_str(),
+    //          WEAPON_NAMES[attacker->weapons[attacker->currentWeapon]->getType()]
+    //              .c_str(),
+    //          attacker->getAttackOther(), attacker->getAttackSelf());
+    // }
     attacker->attack(target);
+    // if (id == 3 && redWarrior->get_id() == 10 && blueWarrior->get_id() == 5)
+    //   printf(", self_remaining:%d, target_remaining:%d\n",
+    //   attacker->get_hp(),
+    //          target->get_hp());
     if (attacker->isDead() || target->isDead())
       break;
     if (!attacker->hasWeapons() && !target->hasWeapons())
