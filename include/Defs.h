@@ -19,5 +19,6 @@ const string WEAPON_NAMES[3] = {"sword", "bomb", "arrow"};
 const Warrior_Type RED_ORDER[5] = {ICEMAN, LION, WOLF, NINJA, DRAGON};
 const Warrior_Type BLUE_ORDER[5] = {LION, DRAGON, NINJA, ICEMAN, WOLF};
 inline int initial_hp[5] = {0}; // 考虑用全局数组来存储初始血量
+inline int attackPower[5] = {0}; // 考虑使用全局数组来存储武士攻击力
 
 #endif

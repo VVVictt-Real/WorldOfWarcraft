@@ -5,16 +5,21 @@ import re
 # 按顺序指定头文件，Defs.h 必须排在第一位，以解决依赖问题
 HEADER_ORDER = [
     "Defs.h",
+    "Clock.h",
     "Warrior.h",
     "Headquarter.h",
-    "Game.h"
+    "Game.h",
+    "Weapon.h",
+    "City.h"
 ]
 
 # 按顺序指定实现文件
 SRC_ORDER = [
     "Warrior.cpp",
     "Headquarter.cpp",
-    "Game.cpp"
+    "Game.cpp",
+    "Weapon.cpp",
+    "City.cpp"
 ]
 
 OUTPUT_FILE = "submit.cpp"

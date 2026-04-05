@@ -1,39 +1,26 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "City.h"
+#include "Clock.h"
 #include "Defs.h"
 #include "Headquarter.h"
 #include "Warrior.h"
+#include <vector>
 
 class Game {
 private:
-  int clocktime;
   Headquarter red_headquarter;
   Headquarter blue_headquarter;
+  vector<City> cities;
+  int cityNum;
+  Clock endtime;
 
 public:
-  Game(int lifeUnit)
-      : red_headquarter("red", lifeUnit, RED_ORDER),
-        blue_headquarter("blue", lifeUnit, BLUE_ORDER) {
-    clocktime = 0;
-  }
-  void run() {
-    while (!(red_headquarter.is_empty() && blue_headquarter.is_empty())) {
-      if (!red_headquarter.is_empty()) {
-        printf("%03d ", clocktime);
-        if (!red_headquarter.buildWarrior()) {
-          printf("red headquarter stops making warriors\n");
-        }
-      }
-      if (!blue_headquarter.is_empty()) {
-        printf("%03d ", clocktime);
-        if (!blue_headquarter.buildWarrior()) {
-          printf("blue headquarter stops making warriors\n");
-        }
-      }
-      clocktime++;
-    }
-  }
+  Game(int lifeUnit, int N, int T);
+  void run();
+  bool move();
+  ~Game();
 };
 void game();
 
