@@ -34,15 +34,9 @@ void Game::run() {
   while (true) {
     if (!red_headquarter.is_empty()) {
       red_headquarter.buildWarrior();
-      // if (!red_headquarter.buildWarrior()) {
-      //   printf("red headquarter stops making warriors\n");
-      // }
     }
     if (!blue_headquarter.is_empty()) {
       blue_headquarter.buildWarrior();
-      // if (!blue_headquarter.buildWarrior()) {
-      //   printf("blue headquarter stops making warriors\n");
-      // }
     }
 
     clocktime.addTime(5);

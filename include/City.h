@@ -1,8 +1,6 @@
 #ifndef CITY
 #define CITY
 
-#include "Defs.h"
-
 class Warrior;
 class Weapon;
 

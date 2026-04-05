@@ -215,18 +215,6 @@ void Wolf::getWeapon(Warrior *other, int city_id) {
   });
   int num = 0;
   Weapon_Type type = stolen[0]->getType();
-  // if (type == ARROW) {
-  //   for (int i = stolen.size() - 1; i >= 0; i--) {
-  //     if (weapons.size() < 10) {
-  //       weapons.push_back(stolen[i]);
-  //       num++;
-  //     } else {
-  //       delete stolen[i];
-  //     }
-  //   }
-  // }
-  // else
-  // {
   for (auto &weapon : stolen) {
     if (weapons.size() < 10) {
       weapon->change_owner(this);
@@ -236,7 +224,6 @@ void Wolf::getWeapon(Warrior *other, int city_id) {
       delete weapon;
     }
   }
-  // }
   clocktime.printTime();
   printf("%s wolf %d took %d %s from %s %s %d in city %d\n",
          this->getColor().c_str(), id, num, WEAPON_NAMES[type].c_str(),
@@ -244,5 +231,3 @@ void Wolf::getWeapon(Warrior *other, int city_id) {
          other->get_id(), city_id);
   sortWeapons();
 }
-int Warrior::getAttackOther() { return weapons[currentWeapon]->attackOther(); }
-int Warrior::getAttackSelf() { return weapons[currentWeapon]->attackSelf(); }

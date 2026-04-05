@@ -3,7 +3,6 @@
 
 #include "City.h"
 #include "Clock.h"
-#include "Defs.h"
 #include "Headquarter.h"
 #include "Warrior.h"
 #include <vector>

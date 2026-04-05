@@ -71,10 +71,10 @@ protected:
   int hp, ap;
   Headquarter *owner;
   Warrior_Type myType;
-
-public:
   vector<Weapon *> weapons;
   int currentWeapon;
+
+public:
   Warrior(int id, int hp, Headquarter *owner, Warrior_Type type);
   int get_id() { return id; }
   int get_hp() { return hp; }
@@ -91,8 +91,6 @@ public:
   void seizeWeapon(Warrior *other);
   string getColor();
   void report();
-  int getAttackOther();
-  int getAttackSelf();
   virtual ~Warrior();
 };
 
@@ -274,7 +272,6 @@ public:
 /* --- Start of City.h --- */
 #ifndef CITY
 #define CITY
-
 
 class Warrior;
 class Weapon;
@@ -517,18 +514,6 @@ void Wolf::getWeapon(Warrior *other, int city_id) {
   });
   int num = 0;
   Weapon_Type type = stolen[0]->getType();
-  // if (type == ARROW) {
-  //   for (int i = stolen.size() - 1; i >= 0; i--) {
-  //     if (weapons.size() < 10) {
-  //       weapons.push_back(stolen[i]);
-  //       num++;
-  //     } else {
-  //       delete stolen[i];
-  //     }
-  //   }
-  // }
-  // else
-  // {
   for (auto &weapon : stolen) {
     if (weapons.size() < 10) {
       weapon->change_owner(this);
@@ -538,7 +523,6 @@ void Wolf::getWeapon(Warrior *other, int city_id) {
       delete weapon;
     }
   }
-  // }
   clocktime.printTime();
   printf("%s wolf %d took %d %s from %s %s %d in city %d\n",
          this->getColor().c_str(), id, num, WEAPON_NAMES[type].c_str(),
@@ -546,8 +530,6 @@ void Wolf::getWeapon(Warrior *other, int city_id) {
          other->get_id(), city_id);
   sortWeapons();
 }
-int Warrior::getAttackOther() { return weapons[currentWeapon]->attackOther(); }
-int Warrior::getAttackSelf() { return weapons[currentWeapon]->attackSelf(); }
 
 /* --- Start of Headquarter.cpp --- */
 
@@ -630,15 +612,9 @@ void Game::run() {
   while (true) {
     if (!red_headquarter.is_empty()) {
       red_headquarter.buildWarrior();
-      // if (!red_headquarter.buildWarrior()) {
-      //   printf("red headquarter stops making warriors\n");
-      // }
     }
     if (!blue_headquarter.is_empty()) {
       blue_headquarter.buildWarrior();
-      // if (!blue_headquarter.buildWarrior()) {
-      //   printf("blue headquarter stops making warriors\n");
-      // }
     }
 
     clocktime.addTime(5);
@@ -794,19 +770,7 @@ void City::runBattle() {
   attacker->sortWeapons();
   target->sortWeapons();
   while (true) {
-    // if (id == 3 && redWarrior->get_id() == 10 && blueWarrior->get_id() == 5)
-    // {
-    //   printf("[DEBUG] attack:%s, weapon:%s, damage:%d, self_damage:%d",
-    //          WARRIOR_NAMES[attacker->getType()].c_str(),
-    //          WEAPON_NAMES[attacker->weapons[attacker->currentWeapon]->getType()]
-    //              .c_str(),
-    //          attacker->getAttackOther(), attacker->getAttackSelf());
-    // }
     attacker->attack(target);
-    // if (id == 3 && redWarrior->get_id() == 10 && blueWarrior->get_id() == 5)
-    //   printf(", self_remaining:%d, target_remaining:%d\n",
-    //   attacker->get_hp(),
-    //          target->get_hp());
     if (attacker->isDead() || target->isDead())
       break;
     if (!attacker->hasWeapons() && !target->hasWeapons())
@@ -868,80 +832,6 @@ void City::runBattle() {
     clocktime.printTime();
     printf("blue dragon %d yelled in city %d\n", blueWarrior->get_id(), id);
   }
-
-  // Warrior *first = (id % 2 == 1) ? redWarrior : blueWarrior;
-  // Warrior *last = (id % 2 == 1) ? blueWarrior : redWarrior;
-  // first->sortWeapons();
-  // last->sortWeapons();
-  // while (true) {
-  //   first->attack(last);
-  //   if (first->isDead() && last->isDead()) {
-  //     clocktime.printTime();
-  //     printf("both red %s %d and blue %s %d died in city %d\n",
-  //            WARRIOR_NAMES[redWarrior->getType()].c_str(),
-  //            redWarrior->get_id(),
-  //            WARRIOR_NAMES[blueWarrior->getType()].c_str(),
-  //            blueWarrior->get_id(), id);
-  //     delete redWarrior;
-  //     delete blueWarrior;
-  //     break;
-  //   }
-  //   if (last->isDead()) {
-  //     first->seizeWeapon(last);
-  //     clocktime.printTime();
-  //     printf("%s %s %d killed %s %s %d in city %d remaining %d elements\n",
-  //            first->getColor().c_str(),
-  //            WARRIOR_NAMES[first->getType()].c_str(), first->get_id(),
-  //            last->getColor().c_str(),
-  //            WARRIOR_NAMES[last->getType()].c_str(), last->get_id(), id,
-  //            first->get_hp());
-  //     if (first->getType() == DRAGON) {
-  //       clocktime.printTime();
-  //       printf("%s %s %d yelled in city %d\n", first->getColor().c_str(),
-  //              WARRIOR_NAMES[first->getType()].c_str(), first->get_id(), id);
-  //     }
-  //     delete last;
-  //     break;
-  //   }
-  //   if (first->isDead()) {
-  //     last->seizeWeapon(first);
-  //     clocktime.printTime();
-  //     printf("%s %s %d killed %s %s %d in city %d remaining %d elements\n",
-  //            last->getColor().c_str(),
-  //            WARRIOR_NAMES[last->getType()].c_str(), last->get_id(),
-  //            first->getColor().c_str(),
-  //            WARRIOR_NAMES[first->getType()].c_str(), first->get_id(), id,
-  //            last->get_hp());
-  //     if (last->getType() == DRAGON) {
-  //       clocktime.printTime();
-  //       printf("%s %s %d yelled in city %d\n", last->getColor().c_str(),
-  //              WARRIOR_NAMES[last->getType()].c_str(), last->get_id(), id);
-  //     }
-  //     delete first;
-  //     break;
-  //   }
-  //   if (!first->hasWeapons() && !last->hasWeapons()) {
-  //     clocktime.printTime();
-  //     printf("both red %s %d and blue %s %d were alive in city %d\n",
-  //            WARRIOR_NAMES[redWarrior->getType()].c_str(),
-  //            redWarrior->get_id(),
-  //            WARRIOR_NAMES[blueWarrior->getType()].c_str(),
-  //            blueWarrior->get_id(), id);
-  //     if (first->getType() == DRAGON)
-  //     if (first->getType() == DRAGON) {
-  //       clocktime.printTime();
-  //       printf("%s %s %d yelled in city %d\n", first->getColor().c_str(),
-  //              WARRIOR_NAMES[first->getType()].c_str(), first->get_id(), id);
-  //     }
-  //     if (last->getType() == DRAGON) {
-  //       clocktime.printTime();
-  //       printf("%s %s %d yelled in city %d\n", last->getColor().c_str(),
-  //              WARRIOR_NAMES[last->getType()].c_str(), last->get_id(), id);
-  //     }
-  //     break;
-  //   }
-  //   swap(first, last);
-  // }
 }
 
 void City::checkLionEscape() {
