@@ -19,6 +19,7 @@ private:
   int totalWarriorNum = 0;
 
 public:
+  bool takenTime = false;
   Headquarter(const string &name, int lifeUnit, const Warrior_Type *order)
       : name(name), lifeUnit(lifeUnit), buildIndex(0), order(order) {}
   bool buildWarrior();
@@ -26,6 +27,7 @@ public:
   void addWarriorNum(Warrior_Type type) { warriorNum[type]++; }
   bool is_empty() { return isEmpty; }
   int getLifeUnit() { return lifeUnit; }
+  void addLifeUnit(int delta) { lifeUnit += delta; }
   void setBase(City *city) { base_city = city; }
   string getName() { return name; }
   ~Headquarter();

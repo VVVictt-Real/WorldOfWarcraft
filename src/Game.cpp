@@ -2,12 +2,14 @@
 #include "Clock.h"
 #include "Defs.h"
 #include "Warrior.h"
+#include "Weapon.h"
 #include <cstdio>
 #include <iostream>
 
 void game() {
-  int M, N, K, T;
-  cin >> M >> N >> K >> T;
+  int M, N, R, K, T;
+  cin >> M >> N >> R >> K >> T;
+  Arrow::writeArrowAP(R);
   Lion::writeLoseEachStep(K);
   clocktime = Clock(0);
   for (int i = 0; i < 5; i++) {
@@ -52,15 +54,68 @@ void Game::run() {
     if (move())
       break;
 
-    clocktime.addTime(25);
-    if (endtime < clocktime)
-      break;
+    clocktime.addTime(10);
     for (auto &city : cities) {
-      if (city.hasBattle())
-        city.checkWolf();
+      city.generateLifeUnit();
+    }
+
+    clocktime.addTime(10);
+    for (auto &city : cities) {
+      if (!city.hasBattle()) {
+        if (city.redWarrior) {
+          red_headquarter.addLifeUnit(city.getLifeUnit());
+          city.takenLifeUnit();
+        }
+        if (city.blueWarrior) {
+          blue_headquarter.addLifeUnit(city.getLifeUnit());
+          city.takenLifeUnit();
+        }
+      }
     }
 
     clocktime.addTime(5);
+    if (endtime < clocktime)
+      break;
+    for (int i = 1; i <= cityNum; i++) {
+      if (cities[i].redWarrior && cities[i + 1].blueWarrior) {
+        cities[i].redShootNext(&cities[i + 1]);
+      }
+      if (cities[i].blueWarrior && cities[i - 1].redWarrior) {
+        cities[i].blueShootNext(&cities[i + 1]);
+      }
+    }
+
+    clocktime.addTime(3);
+    if (endtime < clocktime)
+      break;
+    for (auto &city : cities) {
+      if (city.hasBattle()) {
+        auto flag = city.preRunBattle();
+        if (flag.first) {
+          printf("red %s %d used a bomb and killed blue %s %d\n",
+                 WARRIOR_NAMES[city.redWarrior->getType()].c_str(),
+                 city.redWarrior->get_id(),
+                 WARRIOR_NAMES[city.blueWarrior->getType()].c_str(),
+                 city.blueWarrior->get_id());
+          delete city.redWarrior;
+          delete city.blueWarrior;
+          city.redWarrior = nullptr;
+          city.blueWarrior = nullptr;
+        } else if (flag.second) {
+          printf("blue %s %d used a bomb and killed red %s %d\n",
+                 WARRIOR_NAMES[city.blueWarrior->getType()].c_str(),
+                 city.blueWarrior->get_id(),
+                 WARRIOR_NAMES[city.redWarrior->getType()].c_str(),
+                 city.redWarrior->get_id());
+          delete city.redWarrior;
+          delete city.blueWarrior;
+          city.redWarrior = nullptr;
+          city.blueWarrior = nullptr;
+        }
+      }
+    }
+
+    clocktime.addTime(2);
     if (endtime < clocktime)
       break;
     for (auto &city : cities) {
@@ -125,9 +180,13 @@ bool Game::move() {
     printf("blue %s %d reached red headquarter with %d elements and force %d\n",
            WARRIOR_NAMES[tmp->getType()].c_str(), tmp->get_id(), tmp->get_hp(),
            tmp->get_ap());
-    clocktime.printTime();
-    printf("red headquarter was taken\n");
-    flag = true;
+    if (red_headquarter.takenTime) {
+      clocktime.printTime();
+      printf("red headquarter was taken\n");
+      flag = true;
+    } else {
+      red_headquarter.takenTime = true;
+    }
   }
   for (int i = 1; i <= cityNum; i++) {
     if (cities[i].redWarrior != nullptr) {
@@ -151,9 +210,13 @@ bool Game::move() {
     printf("red %s %d reached blue headquarter with %d elements and force %d\n",
            WARRIOR_NAMES[tmp->getType()].c_str(), tmp->get_id(), tmp->get_hp(),
            tmp->get_ap());
-    clocktime.printTime();
-    printf("blue headquarter was taken\n");
-    flag = true;
+    if (blue_headquarter.takenTime) {
+      clocktime.printTime();
+      printf("blue headquarter was taken\n");
+      flag = true;
+    } else {
+      blue_headquarter.takenTime = true;
+    }
   }
   return flag;
 }

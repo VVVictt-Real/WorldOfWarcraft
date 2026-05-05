@@ -13,8 +13,9 @@ protected:
   int hp, ap;
   Headquarter *owner;
   Warrior_Type myType;
+  bool hasWeapons[WEAPON_NUM] = {false};
   vector<Weapon *> weapons;
-  int currentWeapon;
+  // int currentWeapon;
 
 public:
   Warrior(int id, int hp, Headquarter *owner, Warrior_Type type);
@@ -24,13 +25,16 @@ public:
   int get_warrior_num();
   void beHurt(int damage) { hp -= damage; }
   bool isDead() { return hp <= 0; }
-  void attack(Warrior *other);
-  void sortWeapons();
-  bool hasWeapons();
+  void add_hp(int delta);
+  virtual void attack(Warrior *other);
+  virtual void counterAttack(Warrior *other);
+  bool shoot(Warrior *other);
+  // void sortWeapons();
+  // bool hasWeapons();
   Warrior_Type getType() { return myType; }
-  vector<Weapon *> stolenWeapon();
-  vector<Weapon *> beenSeizedWeapon();
-  void seizeWeapon(Warrior *other);
+  // vector<Weapon *> stolenWeapon();
+  virtual vector<Weapon *> beenSeizedWeapon();
+  virtual void seizeWeapon(Warrior *other) {};
   string getColor();
   void report();
   virtual ~Warrior();
@@ -43,16 +47,21 @@ private:
 public:
   Dragon(int id, Headquarter *owner);
   double getMorale() { return morale; }
+  void changeMorale(double delta) { morale += delta; }
+  // void cheer();
 };
 
 class Ninja : public Warrior {
 private:
 public:
   Ninja(int id, Headquarter *owner);
+  void counterAttack(Warrior *other) override {}
 };
 
 class Iceman : public Warrior {
 private:
+  bool stepTime = true;
+
 public:
   Iceman(int id, Headquarter *owner);
   void moveStep();
@@ -78,6 +87,7 @@ public:
     ap = attackPower[WOLF];
   }
   void getWeapon(Warrior *other, int city_id);
+  void seizeWeapon(Warrior *other) override;
 };
 
 #endif // !WARRIOR_H
